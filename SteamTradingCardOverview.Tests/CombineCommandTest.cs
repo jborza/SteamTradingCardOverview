@@ -12,7 +12,6 @@ namespace SteamTradingCardOverview.Tests
         public void MergeTest()
         {
             //arrange
-            var args = new string[] { "combine", @"testData\out.csv", @"testData\STC_set_data.csv" };
             CombineCommand cc = new CombineCommand();
             var exportInfos = new List<GameInfo>() {
                 new GameInfo() { Name = "GameA", CardsRemaining = 3 },
