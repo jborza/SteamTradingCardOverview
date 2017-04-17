@@ -36,23 +36,29 @@ namespace SteamTradingCardOverview
             }
         }
 
-        private IEnumerable<StcGameInfo> ReadStcGameInfos(string filename)
+        private IEnumerable<T> ReadItemsFromCsv<T>(string filename,Func<string[],T> createItemFromFields) 
         {
             var parser = new TextFieldParser(new StreamReader(filename));
             parser.SetDelimiters(",");
             parser.ReadLine(); //skip first header line
             string[] fields;
-            const int FIELD_NAME = 0;
-            const int FIELD_AVERAGE = 7;
+           
             while (!parser.EndOfData)
             {
                 fields = parser.ReadFields();
-                yield return new StcGameInfo()
-                {
-                    Name = fields[FIELD_NAME],
-                    CardAverage = Decimal.Parse(fields[FIELD_AVERAGE])
-                };
+                yield return createItemFromFields(fields);
             }
+        }
+
+        private IEnumerable<StcGameInfo> ReadStcGameInfos(string filename)
+        {
+            const int FIELD_NAME = 0;
+            const int FIELD_AVERAGE = 7;
+            return ReadItemsFromCsv(filename, fields => new StcGameInfo()
+            {
+                Name = fields[FIELD_NAME],
+                CardAverage = Decimal.Parse(fields[FIELD_AVERAGE])
+            });
         }
 
         private class StcGameInfo
@@ -63,21 +69,13 @@ namespace SteamTradingCardOverview
 
         private IEnumerable<GameInfo> ReadGameInfosFromExport(string filename)
         {
-            var parser = new TextFieldParser(new StreamReader(filename));
-            parser.SetDelimiters(",");
-            parser.ReadLine(); //skip first header line
-            string[] fields;
             const int FIELD_NAME = 0;
             const int FIELD_REMAINING = 1;
-            while (!parser.EndOfData)
+            return ReadItemsFromCsv(filename, fields => new GameInfo()
             {
-                fields = parser.ReadFields();
-                yield return new GameInfo()
-                {
-                    Name = fields[FIELD_NAME],
-                    CardsRemaining = int.Parse(fields[FIELD_REMAINING])
-                };
-            }
+                Name = fields[FIELD_NAME],
+                CardsRemaining = int.Parse(fields[FIELD_REMAINING])
+            });
         }
     }
 }
