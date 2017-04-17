@@ -9,10 +9,31 @@ namespace SteamTradingCardOverview
     {
         static void Main(string[] args)
         {
-            var games = CollectGames();
-            foreach(var game in games.OrderBy(p=>p.Name))
+           if(args.Length == 0)
             {
-                Console.WriteLine(game.Name+";"+game.CardsRemaining);
+                Console.WriteLine("Usage: steamtradingcardoverview [extract] [combine GENERATED.CSV STC_DATA.csv]");
+                Console.WriteLine("commands:");
+                Console.WriteLine("  extract - reads dump from the standard input and generates the CSV as game;amount_of_cards");
+                Console.WriteLine("  combine - combines an output csv with STC_set_data.csv from http://steam.tools");
+                return;
+            }
+            if (args[0] == "extract")
+                ExtractCardsFromSteamBadgesPaste();
+            else if (args[1] == "combine")
+                CombineData(args);
+        }
+
+        static void CombineData(string[] args)
+        {
+
+        }
+
+        static void ExtractCardsFromSteamBadgesPaste()
+        {
+            var games = CollectGames();
+            foreach (var game in games.OrderBy(p => p.Name))
+            {
+                Console.WriteLine($"\"{game.Name}\",{game.CardsRemaining}");
             }
         }
 
