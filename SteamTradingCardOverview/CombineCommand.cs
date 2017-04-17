@@ -21,22 +21,15 @@ namespace SteamTradingCardOverview
             exportCsvFilename = args[1];
             steamToolsCsvFilename = args[2];
             var exportInfos = ReadGameInfosFromExport(exportCsvFilename);
-            var stcInfos = ReadStcGameInfos(steamToolsCsvFilename).ToDictionary(k => k.Name, v => v.CardAverage);
+            var stcInfos = ReadStcGameInfos(steamToolsCsvFilename);
             var data = Merge(exportInfos,stcInfos);
         }
 
-        internal IEnumerable<CardValueInfo> Merge(IEnumerable<GameInfo> exportInfos, Dictionary<string, decimal> stcInfos)
+        internal IEnumerable<CardValueInfo> Merge(IEnumerable<GameInfo> exportInfos, IEnumerable<StcGameInfo> stcInfos)
         {
             return from exp in exportInfos
-                   join stc in stcInfos on exp.Name equals stc.Key
-                   let price = stc.Value
-                   select new CardValueInfo() { Name = exp.Name, CardsRemaining = exp.CardsRemaining, TotalPrice = exp.CardsRemaining * price };
-        }
-
-        public class SteamToolsInfo
-        {
-            public string Name;
-            public decimal AverageCardValue;
+                   join stc in stcInfos on exp.Name equals stc.Name
+                   select new CardValueInfo() { Name = exp.Name, CardsRemaining = exp.CardsRemaining, TotalPrice = exp.CardsRemaining * stc.AverageCardValue };
         }
 
         public class CardValueInfo
@@ -67,14 +60,14 @@ namespace SteamTradingCardOverview
             return ReadItemsFromCsv(filename, fields => new StcGameInfo()
             {
                 Name = fields[FIELD_NAME],
-                CardAverage = Decimal.Parse(fields[FIELD_AVERAGE])
+                AverageCardValue = Decimal.Parse(fields[FIELD_AVERAGE])
             });
         }
 
-        private class StcGameInfo
+        public class StcGameInfo
         {
             public string Name;
-            public decimal CardAverage;
+            public decimal AverageCardValue;
         }
 
         private IEnumerable<GameInfo> ReadGameInfosFromExport(string filename)
