@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SteamTradingCardOverview
 {
-    public class CombineCommand
+    public partial class CombineCommand
     {
         private string exportCsvFilename;
         private string steamToolsCsvFilename;
@@ -23,6 +23,15 @@ namespace SteamTradingCardOverview
             var exportInfos = ReadGameInfosFromExport(exportCsvFilename);
             var stcInfos = ReadStcGameInfos(steamToolsCsvFilename);
             var data = Merge(exportInfos,stcInfos);
+            foreach(var line in PrettyPrint(data))
+                Console.WriteLine(line);
+        }
+
+        internal IEnumerable<string> PrettyPrint(IEnumerable<CardValueInfo> cards)
+        {
+            yield return "\"name\",\"cards remaining\",\"total price\"";
+            foreach (var card in cards)
+                yield return card.CsvPrint();
         }
 
         internal IEnumerable<CardValueInfo> Merge(IEnumerable<GameInfo> exportInfos, IEnumerable<StcGameInfo> stcInfos)
@@ -30,13 +39,6 @@ namespace SteamTradingCardOverview
             return from exp in exportInfos
                    join stc in stcInfos on exp.Name equals stc.Name
                    select new CardValueInfo() { Name = exp.Name, CardsRemaining = exp.CardsRemaining, TotalPrice = exp.CardsRemaining * stc.AverageCardValue };
-        }
-
-        public class CardValueInfo
-        {
-            public string Name;
-            public decimal TotalPrice;
-            public int CardsRemaining;
         }
 
         private IEnumerable<T> ReadItemsFromCsv<T>(string filename, Func<string[], T> createItemFromFields)
@@ -62,12 +64,6 @@ namespace SteamTradingCardOverview
                 Name = fields[FIELD_NAME],
                 AverageCardValue = Decimal.Parse(fields[FIELD_AVERAGE])
             });
-        }
-
-        public class StcGameInfo
-        {
-            public string Name;
-            public decimal AverageCardValue;
         }
 
         private IEnumerable<GameInfo> ReadGameInfosFromExport(string filename)

@@ -6,10 +6,11 @@ Two usage modes:
 
 ## Extract
 
-- first you need to read pasted contents from "badges" page - e.g. http://steamcommunity.com/id/USERNAME/badges/ from the standard input and generates a comma separated list of games and number of remaining steam trading cards. 
+First you need to read pasted contents from "badges" page - e.g. http://steamcommunity.com/id/USERNAME/badges/ from the standard input and generates a comma separated list of games and number of remaining steam trading cards. 
 
-This generates a CSV files Sample output:
+This generates a CSV file - sample output:
 
+    "game","card drops remaining"
     "Grow Home",1  
     "Mad Max",3
 
@@ -23,4 +24,9 @@ Then you run the tool against a downloaded CSVexport from http://steam.tools/car
   
     `steamtradingcardoverview combine export.csv STC_set_data.csv`
   
-It generates a list of your games with available cards and current (average) worth.
+It generates a list of your games with available cards and current (average) worth. Sample:
+
+    "name","cards remaining","total price"
+    "12 Labours of Hercules IV: Mother Nature",1,0.06
+    "12 Labours of Hercules V: Kids of Hellas",4,0.20
+    "Grind Zones",4,0.20
