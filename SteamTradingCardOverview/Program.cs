@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
-using Microsoft.VisualBasic.FileIO;
 
 namespace SteamTradingCardOverview
 {
