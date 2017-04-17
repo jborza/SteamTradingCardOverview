@@ -6,10 +6,11 @@ using System.Linq;
 
 namespace SteamTradingCardOverview
 {
-    class CombineCommand
+    public class CombineCommand
     {
         private string exportCsvFilename;
         private string steamToolsCsvFilename;
+
         public void Execute(string[] args)
         {
             if (args.Length < 3)
@@ -19,28 +20,39 @@ namespace SteamTradingCardOverview
             }
             exportCsvFilename = args[1];
             steamToolsCsvFilename = args[2];
-            Merge();
-        }
-
-        private void Merge()
-        {
             var exportInfos = ReadGameInfosFromExport(exportCsvFilename);
             var stcInfos = ReadStcGameInfos(steamToolsCsvFilename).ToDictionary(k => k.Name, v => v.CardAverage);
-            foreach (var exportInfo in exportInfos)
-            {
-                Console.WriteLine(exportInfo.Name + " / " + exportInfo.CardsRemaining);
-                var match = stcInfos[exportInfo.Name];
-                Console.WriteLine("matched card average:" + match);
-            }
+            var data = Merge(exportInfos,stcInfos);
         }
 
-        private IEnumerable<T> ReadItemsFromCsv<T>(string filename,Func<string[],T> createItemFromFields) 
+        internal IEnumerable<CardValueInfo> Merge(IEnumerable<GameInfo> exportInfos, Dictionary<string, decimal> stcInfos)
+        {
+            return from exp in exportInfos
+                   join stc in stcInfos on exp.Name equals stc.Key
+                   let price = stc.Value
+                   select new CardValueInfo() { Name = exp.Name, CardsRemaining = exp.CardsRemaining, TotalPrice = exp.CardsRemaining * price };
+        }
+
+        public class SteamToolsInfo
+        {
+            public string Name;
+            public decimal AverageCardValue;
+        }
+
+        public class CardValueInfo
+        {
+            public string Name;
+            public decimal TotalPrice;
+            public int CardsRemaining;
+        }
+
+        private IEnumerable<T> ReadItemsFromCsv<T>(string filename, Func<string[], T> createItemFromFields)
         {
             var parser = new TextFieldParser(new StreamReader(filename));
             parser.SetDelimiters(",");
             parser.ReadLine(); //skip first header line
             string[] fields;
-           
+
             while (!parser.EndOfData)
             {
                 fields = parser.ReadFields();
