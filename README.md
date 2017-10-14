@@ -8,7 +8,7 @@ Two usage modes are available, one just for an overview of the cards and the sec
 
 This mode reads the content from your Steam Badges page from the standard input and generates a comma separated list of games and number of remaining steam trading cards. 
 
-First you need to go to your Steam client, and open the Badges page (hover over your profile name in the STORE LIBRARY COMMUNITY YOURNAME and click Badges). Then copy all of the text (<kbd>Ctrl<kbd><kbd>A</kbd> <kbd>Ctrl</kbd><kbd>C</kbd>) and paste it into a text file.
+First you need to go to your Steam client, and open the Badges page (hover over your profile name in the STORE LIBRARY COMMUNITY YOURNAME and click Badges). Then copy all of the text (<kbd>Ctrl</kbd><kbd>A</kbd> <kbd>Ctrl</kbd><kbd>C</kbd>) and paste it into a text file.
 Then you can run the tool as
  
     steamtradingcardoverview extract <pasted.txt >export.csv
